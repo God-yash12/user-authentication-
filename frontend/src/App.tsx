@@ -1,17 +1,25 @@
-import RegistrationForm from "./auth/SignupForm"
 
+import React from 'react';
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import RegistrationPage from './pages/RegistrationPage';
+import DashboardPage from './pages/DashboardPage';
 
-function App() {
+const queryClient = new QueryClient();
 
-
+const App: React.FC = () => {
   return (
-    <>
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <RegistrationForm />
-      </div>
+    <QueryClientProvider client={queryClient}>
+      <HashRouter>
+        <Routes>
+          <Route path="/register" element={<RegistrationPage />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/" element={<Navigate replace to="/register" />} />
+        </Routes>
+      </HashRouter>
+    </QueryClientProvider>
+  );
+};
 
-    </>
-  )
-}
-
-export default App
+export default App;
+    
