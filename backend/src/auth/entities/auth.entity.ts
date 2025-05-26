@@ -1,11 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
+import { Entity, ObjectIdColumn, Column, CreateDateColumn, ObjectId } from 'typeorm';
 
-@Entity()
+@Entity('Users_Registration')
 export class User {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @ObjectIdColumn()
+  _id: ObjectId; 
 
-  @Column({ unique: true })
+  @Column()
   username: string;
 
   @Column()
@@ -13,4 +13,9 @@ export class User {
 
   @CreateDateColumn()
   createdAt: Date;
+
+  // Add a getter for id to match your controller
+  get id(): string {
+    return this._id.toString();
+  }
 }
