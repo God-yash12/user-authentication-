@@ -8,29 +8,33 @@ import { PasswordModule } from './password/password.module';
 import { CaptchaModule } from './captcha/captcha.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { databaseConfig } from './config/database.config';
+import configuration from './config/configuration';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
-     ConfigModule.forRoot({
+    ConfigModule.forRoot({
       envFilePath: '.env',
+      load: [configuration],
       isGlobal: true,
     }),
 
+    HttpModule,
     // TypeORM Configuration
     TypeOrmModule.forRootAsync({
       useFactory: databaseConfig,
       inject: [ConfigService],
     }),
 
-    AuthModule, 
-    UsersModule, 
-    PasswordModule, 
+    AuthModule,
+    UsersModule,
+    PasswordModule,
     CaptchaModule],
   controllers: [AppController],
   providers: [AppService],
 })
 
-  
+
 export class AppModule implements OnModuleInit {
   constructor(private configService: ConfigService) { }
   async onModuleInit() {
