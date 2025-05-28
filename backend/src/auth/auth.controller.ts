@@ -6,7 +6,7 @@ import { Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService) { }
 
   @Post('register/initiate')
   async initiateRegistration(@Body() registerUserDto: RegisterUserDto, @Res() res: Response) {
@@ -22,11 +22,11 @@ export class AuthController {
 
   @Post('register/complete')
   async completeRegistration(
-    @Body() body: { registerData: RegisterUserDto; otpData: VerifyOtpDto },
+    @Body() verifyOtpDto: VerifyOtpDto & RegisterUserDto,
     @Res() res: Response
   ) {
     try {
-      const user = await this.authService.completeRegistration(body.registerData, body.otpData);
+      const user = await this.authService.completeRegistration(verifyOtpDto);
       return res.status(HttpStatus.CREATED).json({
         message: 'User registered successfully',
         user: {

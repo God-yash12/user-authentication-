@@ -18,7 +18,7 @@ export class AuthService {
     private configService: ConfigService,
     private httpService: HttpService,
     private otpService: OtpService,
-  ) {}
+  ) { }
 
   async validateRecaptcha(token: string): Promise<boolean> {
     if (process.env.NODE_ENV === 'development') {
@@ -26,7 +26,7 @@ export class AuthService {
     }
     const secret = this.configService.get<string>('recaptcha.secretKey');
     const url = `https://www.google.com/recaptcha/api/siteverify?secret=${secret}&response=${token}`;
-    
+
     try {
       const response = await firstValueFrom(this.httpService.post(url));
       return response.data.success;
@@ -68,23 +68,18 @@ export class AuthService {
     return { message: 'OTP sent to your email. Please verify to complete registration.' };
   }
 
-  async completeRegistration(registerUserDto: RegisterUserDto, verifyOtpDto: VerifyOtpDto): Promise<User> {
+  async completeRegistration(verifyOtpDto: VerifyOtpDto & RegisterUserDto): Promise<User> {
     // Verify OTP
     const isOtpValid = await this.otpService.verifyOtp(verifyOtpDto.email, verifyOtpDto.otp);
     if (!isOtpValid) {
       throw new Error('Invalid or expired OTP');
     }
 
-    // Ensure email matches
-    if (registerUserDto.email !== verifyOtpDto.email) {
-      throw new Error('Email mismatch');
-    }
-
     // Double-check if user still doesn't exist
     const existingUser = await this.usersRepository.findOne({
       where: [
-        { username: registerUserDto.username },
-        { email: registerUserDto.email }
+        { username: verifyOtpDto.username },
+        { email: verifyOtpDto.email }
       ],
     });
     if (existingUser) {
@@ -93,14 +88,14 @@ export class AuthService {
 
     // Hash password
     const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(registerUserDto.password, salt);
+    const hashedPassword = await bcrypt.hash(verifyOtpDto.password, salt);
 
     // Create user
     const user = this.usersRepository.create({
-      username: registerUserDto.username,
-      email: registerUserDto.email,
+      username: verifyOtpDto.username,
+      email: verifyOtpDto.email,
       password: hashedPassword,
-      isEmailVerified: true, // Since OTP was verified
+      isEmailVerified: true,
     });
 
     return this.usersRepository.save(user);
