@@ -10,6 +10,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { databaseConfig } from './config/database.config';
 import configuration from './config/configuration';
 import { HttpModule } from '@nestjs/axios';
+import { MailerModule } from './mailer/mailer.module';
 
 @Module({
   imports: [
@@ -29,7 +30,8 @@ import { HttpModule } from '@nestjs/axios';
     AuthModule,
     UsersModule,
     PasswordModule,
-    CaptchaModule],
+    CaptchaModule,
+    MailerModule],
   controllers: [AppController],
   providers: [AppService],
 })

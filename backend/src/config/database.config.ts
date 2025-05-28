@@ -8,4 +8,5 @@ export const databaseConfig = (configService: ConfigService): TypeOrmModuleOptio
     // url: process.env.DATABASE_URL.trim(),
     autoLoadEntities: true,
     synchronize: true,
+    logging: true
 });
