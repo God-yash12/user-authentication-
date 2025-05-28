@@ -27,13 +27,17 @@ import { IsEmail, IsNotEmpty, MinLength, IsOptional, IsString } from 'class-vali
 
 export class RegisterUserDto {
   @IsNotEmpty()
+  @IsString()
   username: string;
 
   @IsEmail()
+  @IsString()
+  @IsNotEmpty()
   email: string;
 
   @IsNotEmpty()
   @MinLength(6)
+  @IsString()
   password: string;
 
   @IsOptional()
@@ -43,14 +47,17 @@ export class RegisterUserDto {
 
 export class VerifyOtpDto {
   @IsEmail()
+  @IsString()
   email: string;
 
   @IsNotEmpty()
+  @IsString()
   otp: string;
 }
 
 export class ResendOtpDto {
   @IsEmail()
+  @IsString()
   email: string;
 }
 

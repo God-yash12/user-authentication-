@@ -8,7 +8,6 @@ import { useRef } from 'react'
 import ReCAPTCHA from 'react-google-recaptcha'
 import { useMutation } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
-// import axios from 'axios'
 import { apiClient } from "../api/client"
 
 const SITE_KEY = '6LcDeEkrAAAAAMk9XAW3gp96xhTXVyZgwrOSiEB5'
@@ -34,15 +33,21 @@ export function RegisterForm() {
       const response = await api.post("register/initiate", data)
       return response.data
     },
-    onSuccess: (data) => {
+    onSuccess: (data, formData) => {
       console.log('Registration successful:', data)
       reset()
       recaptchaRef.current?.reset()
       toast.success("OTP has been sent successfully to your email")
 
-      // Redirect to VerifyOTP after successful registration
+      // Redirect to VerifyOTP after successful registration with all form data
       setTimeout(() => {
-        navigate('/VerifyOTP', { state: { email: data.email } })
+        navigate('/VerifyOTP', { 
+          state: { 
+            email: formData.email,
+            username: formData.username,
+            password: formData.password
+          } 
+        })
       }, 1500)
     },
     onError: (error: any) => {

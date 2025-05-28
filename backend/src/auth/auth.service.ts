@@ -1,7 +1,6 @@
-
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { MongoRepository } from 'typeorm';
 import { User } from './entities/auth.entity';
 import * as bcrypt from 'bcryptjs';
 import { ConfigService } from '@nestjs/config';
@@ -14,7 +13,7 @@ import { OtpService } from '../mailer/otp.service';
 export class AuthService {
   constructor(
     @InjectRepository(User)
-    private usersRepository: Repository<User>,
+    private usersRepository: MongoRepository<User>,
     private configService: ConfigService,
     private httpService: HttpService,
     private otpService: OtpService,
@@ -37,7 +36,6 @@ export class AuthService {
   }
 
   async initiateRegistration(registerUserDto: RegisterUserDto): Promise<{ message: string }> {
-    // Verify reCAPTCHA only if token is provided
     if (registerUserDto.recaptchaToken) {
       const isRecaptchaValid = await this.validateRecaptcha(registerUserDto.recaptchaToken);
       if (!isRecaptchaValid) {
@@ -47,7 +45,7 @@ export class AuthService {
 
     // Check if username exists
     const existingUsername = await this.usersRepository.findOne({
-      where: { username: registerUserDto.username },
+      where: { username: registerUserDto.username }
     });
     if (existingUsername) {
       throw new Error('Username already exists');
@@ -55,33 +53,59 @@ export class AuthService {
 
     // Check if email exists
     const existingEmail = await this.usersRepository.findOne({
-      where: { email: registerUserDto.email },
+      where: { email: registerUserDto.email.toLowerCase().trim() }
     });
     if (existingEmail) {
       throw new Error('Email already registered');
     }
 
-    // Store registration data temporarily (you might want to use Redis or database)
-    // For now, we'll send OTP and expect the frontend to store the registration data
     await this.otpService.sendOtp(registerUserDto.email);
 
     return { message: 'OTP sent to your email. Please verify to complete registration.' };
   }
 
   async completeRegistration(verifyOtpDto: VerifyOtpDto & RegisterUserDto): Promise<User> {
+    console.log('=== REGISTRATION COMPLETION REQUEST ===');
+    console.log('Full request body:', JSON.stringify(verifyOtpDto, null, 2));
+    
+    if (!verifyOtpDto.email) throw new Error('Email is required');
+    if (!verifyOtpDto.otp) throw new Error('OTP is required');
+    if (!verifyOtpDto.username) throw new Error('Username is required');
+    if (!verifyOtpDto.password) throw new Error('Password is required');
+
+    const normalizedEmail = verifyOtpDto.email.toLowerCase().trim();
+    const normalizedOtp = verifyOtpDto.otp.trim();
+    
+    console.log('Registration completion attempt:', {
+      email: normalizedEmail,
+      otp: normalizedOtp,
+      username: verifyOtpDto.username,
+      timestamp: new Date().toISOString()
+    });
+
     // Verify OTP
-    const isOtpValid = await this.otpService.verifyOtp(verifyOtpDto.email, verifyOtpDto.otp);
-    if (!isOtpValid) {
+    try {
+      const isOtpValid = await this.otpService.verifyOtp(normalizedEmail, normalizedOtp);
+      if (!isOtpValid) {
+        console.log('OTP verification failed for:', normalizedEmail);
+        throw new Error('Invalid or expired OTP');
+      }
+      console.log('OTP verified successfully for:', normalizedEmail);
+    } catch (error) {
+      console.error('OTP verification error:', error);
       throw new Error('Invalid or expired OTP');
     }
 
     // Double-check if user still doesn't exist
     const existingUser = await this.usersRepository.findOne({
-      where: [
-        { username: verifyOtpDto.username },
-        { email: verifyOtpDto.email }
-      ],
+      where: {
+        $or: [
+          { username: verifyOtpDto.username },
+          { email: normalizedEmail }
+        ]
+      }
     });
+    
     if (existingUser) {
       throw new Error('User already exists');
     }
@@ -91,18 +115,19 @@ export class AuthService {
     const hashedPassword = await bcrypt.hash(verifyOtpDto.password, salt);
 
     // Create user
-    const user = this.usersRepository.create({
-      username: verifyOtpDto.username,
-      email: verifyOtpDto.email,
-      password: hashedPassword,
-      isEmailVerified: true,
-    });
+    const user = new User();
+    user.username = verifyOtpDto.username;
+    user.email = normalizedEmail;
+    user.password = hashedPassword;
+    user.isEmailVerified = true;
 
-    return this.usersRepository.save(user);
+    const savedUser = await this.usersRepository.save(user);
+    console.log('User created successfully:', savedUser.email);
+    
+    return savedUser;
   }
 
   async resendOtp(email: string): Promise<{ message: string }> {
-    // Check if email exists in pending registrations or needs verification
     await this.otpService.sendOtp(email);
     return { message: 'OTP resent to your email' };
   }

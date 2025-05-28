@@ -1,6 +1,6 @@
-import { Entity, ObjectIdColumn, Column, CreateDateColumn, ObjectId } from 'typeorm';
+import { Entity, Column, ObjectIdColumn, ObjectId, CreateDateColumn } from 'typeorm';
 
-@Entity('otps')
+@Entity()
 export class Mailer {
   @ObjectIdColumn()
   _id: ObjectId;
@@ -12,15 +12,11 @@ export class Mailer {
   otp: string;
 
   @Column()
-  expiresAt: Date;
-
-  @Column({ default: false })
   isUsed: boolean;
+
+  @Column()
+  expiresAt: Date;
 
   @CreateDateColumn()
   createdAt: Date;
-
-  get id(): string {
-    return this._id.toString();
-  }
 }
