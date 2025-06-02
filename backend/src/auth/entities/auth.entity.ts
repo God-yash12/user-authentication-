@@ -23,6 +23,10 @@ export class User {
   @UpdateDateColumn()
   updatedAt: Date;
 
+  @Column({ nullable: true })
+  refreshToken?: string;
+
+
   // Add a getter for id to match your controller
   get id(): string {
     return this._id.toString();
