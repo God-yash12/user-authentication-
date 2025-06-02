@@ -16,11 +16,13 @@ export function RegisterForm() {
   const navigate = useNavigate()
   const recaptchaRef = useRef<ReCAPTCHA>(null);
   const api = apiClient;
+  
 
   const {
     register,
     handleSubmit,
     reset,
+    setError,
     formState: { errors, isSubmitting }
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
@@ -41,21 +43,36 @@ export function RegisterForm() {
 
       // Redirect to VerifyOTP after successful registration with all form data
       setTimeout(() => {
-        navigate('/VerifyOTP', { 
-          state: { 
+        navigate('/VerifyOTP', {
+          state: {
             email: formData.email,
             username: formData.username,
             password: formData.password
-          } 
+          }
         })
       }, 1500)
     },
     onError: (error: any) => {
       console.error("Registration failed:", error)
       const message = error?.response?.data?.message || "Failed to register user"
-      toast.error(message)
+
+      // Handle specific error types
+      if (message.toLowerCase().includes('username already exists')) {
+        setError('username', {
+          type: 'server',
+          message: 'This username is already taken. Please choose another.'
+        })
+      } else if (message.toLowerCase().includes('email')) {
+        setError('email', {
+          type: 'server',
+          message: message
+        })
+      } else {
+        toast.error(message)
+      }
+
       recaptchaRef.current?.reset()
-    },
+    }
   })
 
   // Fix the onSubmit function signature to match react-hook-form expectations
