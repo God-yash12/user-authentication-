@@ -10,6 +10,7 @@ export class OtpService {
     @InjectRepository(Mailer)
     private readonly otpRepository: MongoRepository<Mailer>,
     private readonly emailService: EmailService,
+    
   ) {}
 
   generateOtp(): string {

@@ -15,7 +15,9 @@ export const registerSchema = z.object({
     .max(100, 'Email must be less than 100 characters')
     .email('Invalid email address'),
   recaptchaToken: z.string().optional(),
+}).refine((data) => data.password !== data.username, {
+  message: "Password cannot be the same as username",
+  path: ["password"],
 })
 
 export type RegisterFormData = z.infer<typeof registerSchema>
-

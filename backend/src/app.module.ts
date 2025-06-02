@@ -10,6 +10,7 @@ import configuration from './config/configuration';
 import { HttpModule } from '@nestjs/axios';
 import { MailerModule } from './mailer/mailer.module';
 import { LoginModule } from './login/login.module';
+import { ResetPasswordModule } from './reset-password/reset-password.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { LoginModule } from './login/login.module';
     CaptchaModule,
     MailerModule,
     LoginModule,
+    ResetPasswordModule
   ],
   controllers: [AppController],
   providers: [AppService],
