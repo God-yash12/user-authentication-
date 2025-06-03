@@ -1,27 +1,28 @@
 import { Toaster } from 'react-hot-toast'
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
-import Dashboard from './components/Dashboard'
+import { Route, Routes, Navigate } from 'react-router-dom'
+import { Dashboard } from './components/Dashboard'
 import { RegisterForm } from './components/RegisterForm'
 import VerifyOTP from './components/VerifyOTP'
-import Login from './components/Login'
-
-
+import { ProtectedRoute } from './auth/ProtectedRoute'
+import { LoginForm } from './auth/LoginForm'
 
 function App() {
-
   return (
     <>
-      <Router>
-        <Toaster />
-        <Routes>
-          <Route path="/" element={<RegisterForm />} />
-          <Route path="/VerifyOTP" element={<VerifyOTP />} />
-          {/* Add other routes as needed */}
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="*" element={<div>404 Not Found</div>} />
-        </Routes>
-      </Router>
+      <Toaster />
+      <Routes>
+        <Route path="/" element={<RegisterForm />} />
+        <Route path="/VerifyOTP" element={<VerifyOTP />} />
+        <Route path="/dashboard" element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        } />
+        <Route path="/login" element={<LoginForm />} />
+        <Route path="*" element={<div>404 Not Found</div>} />
+        {/* Optional redirect (make sure it's not duplicating root) */}
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+      </Routes>
     </>
   )
 }

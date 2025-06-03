@@ -1,6 +1,6 @@
 'use client'
 
-import { useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { registerSchema, type RegisterFormData } from '../schemas/register'
@@ -282,6 +282,9 @@ export function RegisterForm() {
       >
         {isLoading ? 'Registering...' : 'Register'}
       </button>
+       <p className="mt-4 text-sm text-gray-600 text-center">
+        Already have an account? <Link to="/login" className="text-blue-600 hover:underline font-bold">Login Now</Link>
+      </p>
 
       <p className="mt-4 text-sm text-gray-600 text-center">
         By registering, you agree to our Terms of Service and Privacy Policy.
