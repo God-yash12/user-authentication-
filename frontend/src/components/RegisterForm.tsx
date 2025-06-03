@@ -269,7 +269,7 @@ export function RegisterForm() {
 
       <div className="mb-6">
         <ReCAPTCHA
-          sitekey={SITE_KEY}
+          sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY || SITE_KEY}
           ref={recaptchaRef}
           theme="light"
         />

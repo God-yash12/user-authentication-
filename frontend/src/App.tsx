@@ -7,7 +7,7 @@ import { ProtectedRoute } from './auth/ProtectedRoute'
 import { LoginForm } from './auth/LoginForm'
 import { ResetPassword } from './auth/reset-password/reset-password'
 import { VerifyOTPForgetPassword } from './auth/reset-password/verify-otp'
-import { NewPasswordForm } from './auth/reset-password/reset-password-form'
+import { NewPasswordForm } from './auth/reset-password/new-password'
 
 function App() {
   return (
