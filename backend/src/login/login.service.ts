@@ -129,7 +129,7 @@ export class LoginService {
       email: user.email,
       username: user.username,
       isEmailVerified: user.isEmailVerified,
-      iat: Math.floor(Date.now() / 1000), // issued at
+      iat: Math.floor(Date.now() / 1000),
     };
 
     const [accessToken, refreshToken] = await Promise.all([

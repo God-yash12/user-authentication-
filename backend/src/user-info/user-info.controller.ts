@@ -7,7 +7,7 @@ import { UpdateUserInfoDto } from './dto/update-user-info.dto';
 export class UserInfoController {
   constructor(private readonly userInfoService: UserInfoService) { }
 
-  @Get('user-info')
+  @Get('user-info/all')
   findAll() {
     return this.userInfoService.findAll();
   }

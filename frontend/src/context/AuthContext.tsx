@@ -18,8 +18,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Query to get current user info
   const { data: userInfo, isLoading, error } = useQuery({
     queryKey: ['currentUser'],
-    queryFn: authApi.getCurrentUser,
-    enabled: !!tokenUtils.getAccessToken(),
+    queryFn: () => {
+      const userId = user?.id;
+      if (!userId) {
+        throw new Error('No user ID available');
+      }
+      return authApi.getCurrentUser(userId);
+    },
+    enabled: !!tokenUtils.getAccessToken() && !!user?.id,
     retry: false,
   });
 

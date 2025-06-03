@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { Eye, EyeOff } from 'lucide-react';
 import { loginSchema, type LoginFormData } from '../schemas/login.schemas'
 import { useAuthMutations } from '../hooks/useAuthMutations';
 import { Input } from '../components/ui/Input';
@@ -11,6 +12,7 @@ export const LoginForm: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { login } = useAuthMutations();
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -21,6 +23,9 @@ export const LoginForm: React.FC = () => {
     resolver: zodResolver(loginSchema),
   });
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
   
   const onSubmit = async (data: LoginFormData) => {
     try {
@@ -37,6 +42,14 @@ export const LoginForm: React.FC = () => {
     }
   };
 
+  const handleForgotPassword = () => {
+    navigate('/forgot-password');
+  };
+
+  const handleSignUp = () => {
+    navigate('/');
+  };
+
   return (
     <div className="max-w-md mx-auto mt-8 p-6 bg-white rounded-lg shadow-md">
       <h2 className="text-2xl font-bold text-center mb-6">Login</h2>
@@ -50,13 +63,26 @@ export const LoginForm: React.FC = () => {
           error={errors.email?.message}
         />
 
-        <Input
-          {...register('password')}
-          type="password"
-          label="Password"
-          placeholder="Enter your password"
-          error={errors.password?.message}
-        />
+        <div className="relative">
+          <Input
+            {...register('password')}
+            type={showPassword ? 'text' : 'password'}
+            label="Password"
+            placeholder="Enter your password"
+            error={errors.password?.message}
+          />
+          <button
+            type="button"
+            onClick={togglePasswordVisibility}
+            className="absolute right-3 top-9 text-gray-500 hover:text-gray-700 focus:outline-none"
+          >
+            {showPassword ? (
+              <EyeOff size={20} />
+            ) : (
+              <Eye size={20} />
+            )}
+          </button>
+        </div>
 
         {errors.root && (
           <div className="text-red-600 text-sm text-center">
@@ -72,6 +98,27 @@ export const LoginForm: React.FC = () => {
         >
           {login.isPending ? 'Logging in...' : 'Login'}
         </Button>
+
+        <div className="text-center">
+          <button
+            type="button"
+            onClick={handleForgotPassword}
+            className="text-sm text-blue-600 hover:text-blue-800 hover:underline focus:outline-none"
+          >
+            Forgot Password?
+          </button>
+        </div>
+
+        <div className="text-center text-sm text-gray-600">
+          Don't have an account?{' '}
+          <button
+            type="button"
+            onClick={handleSignUp}
+            className="text-blue-600 hover:text-blue-800 hover:underline focus:outline-none font-medium"
+          >
+            Sign up now
+          </button>
+        </div>
       </form>
     </div>
   );
