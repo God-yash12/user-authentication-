@@ -11,6 +11,7 @@ import { HttpModule } from '@nestjs/axios';
 import { MailerModule } from './mailer/mailer.module';
 import { LoginModule } from './login/login.module';
 import { ResetPasswordModule } from './reset-password/reset-password.module';
+import { UserInfoModule } from './user-info/user-info.module';
 
 @Module({
   imports: [
@@ -31,7 +32,8 @@ import { ResetPasswordModule } from './reset-password/reset-password.module';
     CaptchaModule,
     MailerModule,
     LoginModule,
-    ResetPasswordModule
+    ResetPasswordModule,
+    UserInfoModule
   ],
   controllers: [AppController],
   providers: [AppService],
