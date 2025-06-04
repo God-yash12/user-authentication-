@@ -15,7 +15,7 @@ export class UserInfoService {
 
   findAll() {
     return this.userRepository.find({
-      select: ['id', 'username', 'email', 'isEmailVerified'],
+      select: ['id', 'username', 'email', 'isEmailVerified', 'role', 'createdAt'],
     });
   }
 
@@ -23,8 +23,8 @@ export class UserInfoService {
   async findOne(id: string) {
     try {
       return await this.userRepository.findOne({
-        select: ['id', 'username', 'email', 'isEmailVerified'],
-        where: { _id: new ObjectId(id) }, 
+        select: ['id', 'username', 'email', 'isEmailVerified', 'role', 'createdAt'],
+        where: { _id: new ObjectId(id) },
       });
     } catch (error) {
       // Handle invalid ObjectId format

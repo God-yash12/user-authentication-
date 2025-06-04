@@ -8,6 +8,12 @@ export class User {
   @Column({ unique: true })
   username: string;
 
+  @Column()
+  firstName: string;
+
+  @Column()
+  lastName: string;
+
   @Column({ unique: true })
   email: string;
 
@@ -16,6 +22,9 @@ export class User {
 
   @Column()
   password: string;
+
+  @Column()
+  role: string;
 
   @CreateDateColumn()
   createdAt: Date;

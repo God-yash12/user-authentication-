@@ -21,8 +21,8 @@ export interface LoginResponse {
     username: string;
     email: string;
     isEmailVerified: boolean;
-    fullName?: string;
-    lastLoginAt?: Date;
+    role: string;
+    createdAt?: Date;
   };
   tokens: AuthTokens;
 }
@@ -106,6 +106,7 @@ export class LoginService {
         username: user.username,
         email: user.email,
         isEmailVerified: user.isEmailVerified,
+        role: user.role,
       },
       tokens,
     };

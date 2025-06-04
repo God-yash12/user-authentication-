@@ -30,6 +30,14 @@ export class RegisterUserDto {
   @IsString()
   username: string;
 
+  @IsNotEmpty()
+  @IsString()
+  firstName: string;
+
+  @IsNotEmpty()
+  @IsString()
+  lastName: string;
+
   @IsEmail()
   @IsString()
   @IsNotEmpty()

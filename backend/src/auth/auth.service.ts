@@ -120,6 +120,7 @@ export class AuthService {
     user.email = normalizedEmail;
     user.password = hashedPassword;
     user.isEmailVerified = true;
+    user.role = 'user'; // Default role, can be changed later
 
     const savedUser = await this.usersRepository.save(user);
     console.log('User created successfully:', savedUser.email);

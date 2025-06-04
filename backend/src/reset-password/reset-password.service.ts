@@ -6,7 +6,7 @@ import { EmailService } from '../mailer/email.service';
 import { JsonWebTokenError, JwtService } from '@nestjs/jwt';
 import * as bcrypt from "bcrypt";
 import { AuthService } from '../auth/auth.service';
-import { OtpService } from 'src/mailer/otp.service';
+import { OtpService } from '../mailer/otp.service';
 
 @Injectable()
 export class ResetPasswordService {
