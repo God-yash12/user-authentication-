@@ -3,7 +3,8 @@ export interface User {
     username: string;
     email: string;
     isEmailVerified: boolean;
-    fullName?: string;
+    firstName?: string;
+    lastName?: string;
     createdAt?: string;
 }
 

@@ -125,7 +125,9 @@ export function RegisterForm() {
           state: {
             email: formData.email,
             username: formData.username,
-            password: formData.password
+            password: formData.password,
+            firstName: formData.firstName,
+            lastName: formData.lastName,
           }
         })
       }, 500)
@@ -227,6 +229,39 @@ export function RegisterForm() {
       </div>
 
       <div className="mb-4">
+        <label htmlFor="firstName" className="block text-gray-700 mb-2">
+          First Name
+        </label>
+        <input
+          id="firstName"
+          type="text"
+          {...register('firstName')}
+          className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.firstName ? 'border-red-500' : 'border-gray-300'
+            }`}
+          disabled={isLoading}
+        />
+        {errors.firstName && (
+          <p className="mt-1 text-sm text-red-600">{errors.firstName.message}</p>
+        )}  
+      </div>
+      <div className="mb-4">
+        <label htmlFor="lastName" className="block text-gray-700 mb-2">
+          Last Name
+        </label>
+        <input
+          id="lastName"
+          type="text"
+          {...register('lastName')}
+          className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.lastName ? 'border-red-500' : 'border-gray-300'
+            }`}
+          disabled={isLoading}
+        />
+        {errors.lastName && (
+          <p className="mt-1 text-sm text-red-600">{errors.lastName.message}</p>
+        )}
+      </div>
+
+      <div className="mb-4">
         <label htmlFor="email" className="block text-gray-700 mb-2">
           Email
         </label>
@@ -282,7 +317,7 @@ export function RegisterForm() {
       >
         {isLoading ? 'Registering...' : 'Register'}
       </button>
-       <p className="mt-4 text-sm text-gray-600 text-center">
+      <p className="mt-4 text-sm text-gray-600 text-center">
         Already have an account? <Link to="/login" className="text-blue-600 hover:underline font-bold">Login Now</Link>
       </p>
 

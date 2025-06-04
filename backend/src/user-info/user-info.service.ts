@@ -15,7 +15,7 @@ export class UserInfoService {
 
   findAll() {
     return this.userRepository.find({
-      select: ['id', 'username', 'email', 'isEmailVerified', 'role', 'createdAt'],
+      select: ['id', 'username', 'firstName', 'lastName', 'email', 'isEmailVerified', 'role', 'createdAt'],
     });
   }
 
@@ -23,7 +23,7 @@ export class UserInfoService {
   async findOne(id: string) {
     try {
       return await this.userRepository.findOne({
-        select: ['id', 'username', 'email', 'isEmailVerified', 'role', 'createdAt'],
+        select: ['id', 'username', 'firstName', 'lastName', 'email', 'isEmailVerified', 'role', 'createdAt'],
         where: { _id: new ObjectId(id) },
       });
     } catch (error) {

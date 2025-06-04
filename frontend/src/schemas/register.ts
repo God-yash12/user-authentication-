@@ -4,6 +4,12 @@ export const registerSchema = z.object({
   username: z.string()
     .min(3, 'Username must be at least 3 characters')
     .max(20, 'Username must be less than 20 characters'),
+  firstName: z.string()
+    .min(1, 'First name is required')
+    .max(100, 'First name must be less than 100 characters'),
+  lastName: z.string()
+    .min(1, 'Last name is required')
+    .max(100, 'Last name must be less than 100 characters'),
   password: z.string()
     .min(8, 'Password must be at least 8 characters')
     .regex(/[A-Z]/, 'Must contain at least one uppercase letter')

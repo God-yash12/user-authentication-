@@ -120,6 +120,8 @@ export class AuthService {
     user.email = normalizedEmail;
     user.password = hashedPassword;
     user.isEmailVerified = true;
+    user.firstName = verifyOtpDto.firstName;
+    user.lastName = verifyOtpDto.lastName;
     user.role = 'user'; // Default role, can be changed later
 
     const savedUser = await this.usersRepository.save(user);

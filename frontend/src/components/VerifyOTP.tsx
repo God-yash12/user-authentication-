@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { z } from "zod";
 import { apiClient } from "../api/client";
+import { toast } from "react-hot-toast";
 
 const OTP_LENGTH = 6;
 
@@ -17,18 +18,21 @@ type OTPFormData = z.infer<typeof otpSchema>;
 const VerifyOTP: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const { email, username, password } = location.state || {};
+    const { email, username, password, firstName, lastName } = location.state || {};
 
     const inputsRef = useRef<Array<HTMLInputElement | null>>([]);
     const [resendStatus, setResendStatus] = useState<string | null>(null);
     const api = apiClient;
 
     React.useEffect(() => {
-        if (!email || !username || !password) {
+        if (!email || !username || !password || !firstName || !lastName) {
             console.error("Missing registration data, redirecting to register");
-            navigate("/register");
+            navigate("/register", {
+                state: { error: "Missing registration data. Please try again." },
+            });
+            toast.error("Missing registration data. Please try again.");
         }
-    }, [email, username, password, navigate]);
+    }, [email, username, password, firstName, lastName, navigate]);
 
     const {
         control,
@@ -45,7 +49,7 @@ const VerifyOTP: React.FC = () => {
 
     const verifyOTPMutation = useMutation({
         mutationFn: async (otp: string) => {
-            const response = await api.post("register/complete", { otp, email, username, password });
+            const response = await api.post("register/complete", { otp, email, username, password, firstName, lastName });
             return response.data;
         },
         onSuccess: () => {

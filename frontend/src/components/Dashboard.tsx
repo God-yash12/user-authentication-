@@ -29,15 +29,20 @@ export const Dashboard: React.FC = () => {
                                     <p className="text-sm text-gray-900">{user?.email}</p>
                                 </div>
                                 <div>
+                                    <span className="text-sm font-medium text-gray-500">First Name:</span>
+                                    <p className="text-sm text-gray-900">{user?.firstName}</p>
+                                </div>
+                                <div>
+                                    <span className="text-sm font-medium text-gray-500">Last Name:</span>
+                                    <p className="text-sm text-gray-900">{user?.lastName}</p>
+                                </div>
+                                <div>
                                     <span className="text-sm font-medium text-gray-500">Email Verified:</span>
                                     <p className="text-sm text-gray-900">
                                         {user?.isEmailVerified ? 'Yes' : 'No'}
                                     </p>
                                 </div>
-                                <div>
-                                    <span className="text-sm font-medium text-gray-500">User ID:</span>
-                                    <p className="text-sm text-gray-900">{user?.id}</p>
-                                </div>
+                               
                             </div>
                         </div>
                     </div>
