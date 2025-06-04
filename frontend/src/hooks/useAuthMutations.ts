@@ -13,10 +13,10 @@ export const useAuthMutations = () => {
         mutationFn: (credentials: LoginRequest) => authLogin(credentials),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['currentUser'] });
-            
+
             // Role-based redirection
             const userRole = tokenUtils.getUserRole();
-            
+
             if (userRole === 'admin') {
                 navigate('/admin/dashboard');
             } else if (userRole === 'user') {
@@ -32,10 +32,10 @@ export const useAuthMutations = () => {
         },
     });
 
-    
+
     const logoutMutation = useMutation({
         mutationFn: () => Promise.resolve(authLogout()),
-       onSuccess: () => {
+        onSuccess: () => {
             queryClient.clear();
             navigate('/login');
         },

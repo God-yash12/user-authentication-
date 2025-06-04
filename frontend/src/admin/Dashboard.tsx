@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { LoadingSpinner } from '../components/ui/LoadingSpinner';
+import { LogoutButton } from '../auth/LogoutButton';
 
 interface DashboardStats {
     totalUsers: number;
@@ -79,7 +81,7 @@ const AdminDashboard: React.FC = () => {
         return (
             <div className="min-h-screen bg-gray-50 p-6">
                 <div className="flex items-center justify-center h-64">
-                    <div className="text-lg text-gray-600">Loading...</div>
+                    <div className="text-lg text-gray-600"><LoadingSpinner /></div>
                 </div>
             </div>
         );
@@ -96,6 +98,9 @@ const AdminDashboard: React.FC = () => {
                         </button>
                         <button className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
                             Settings
+                        </button>
+                        <button className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
+                            <LogoutButton className="text-sm" />
                         </button>
                     </div>
                 </div>
