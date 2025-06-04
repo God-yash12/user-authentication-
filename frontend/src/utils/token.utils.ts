@@ -1,4 +1,4 @@
-// Enhanced tokenUtils with cookie support and JWT decoding
+
 const ACCESS_TOKEN_KEY = 'accessToken';
 const REFRESH_TOKEN_KEY = 'refreshToken';
 
@@ -14,6 +14,9 @@ export interface JWTPayload {
   sub: string;           // User ID
   email: string;
   username: string;
+  firstName?: string;
+  lastName?: string;
+  role?: string;
   isEmailVerified: boolean;
   iat: number;          // Issued at
   exp: number;          // Expires at
@@ -38,6 +41,8 @@ export const tokenUtils = {
     localStorage.removeItem(ACCESS_TOKEN_KEY);
     localStorage.removeItem(REFRESH_TOKEN_KEY);
   },
+
+  
 
   // ===== COOKIE METHODS =====
   setTokensInCookies: (accessToken: string, refreshToken: string): void => {
@@ -106,6 +111,24 @@ export const tokenUtils = {
     const payload = tokenUtils.getUserInfo(token);
     return payload?.isEmailVerified || false;
   },
+
+
+  getUserRole: (token?: string): string | null => {
+    const payload = tokenUtils.getUserInfo(token);
+    return payload?.role || null;
+  },
+
+  // Add role checking methods
+  isAdmin: (token?: string): boolean => {
+    const role = tokenUtils.getUserRole(token);
+    return role === 'admin';
+  },
+
+  isUser: (token?: string): boolean => {
+    const role = tokenUtils.getUserRole(token);
+    return role === 'user';
+  },
+
 
   // ===== TOKEN VALIDATION =====
   isTokenExpired: (token: string): boolean => {
@@ -178,6 +201,9 @@ export const useTokens = () => {
         id: userInfo.sub,           // User ID
         email: userInfo.email,      // Email
         username: userInfo.username, // Username
+        firstName: userInfo.firstName,
+        lastName: userInfo.lastName,
+        roles: userInfo.role,
         isEmailVerified: userInfo.isEmailVerified,
         tokenExpiresAt: new Date(userInfo.exp * 1000),
       };
@@ -204,5 +230,6 @@ export const useTokens = () => {
     getUserEmail: tokenUtils.getUserEmail,
     getUsername: tokenUtils.getUsername,
     isEmailVerified: tokenUtils.isEmailVerified,
+    
   };
 };

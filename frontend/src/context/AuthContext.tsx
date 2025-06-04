@@ -43,17 +43,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = async (credentials: LoginRequest): Promise<void> => {
     try {
       const response = await authApi.login(credentials);
-      
+
       if (response.success) {
         const { user, accessToken, refreshToken } = response.data;
-        
+
         // Store tokens
         tokenUtils.setTokens(accessToken, refreshToken);
-        
+
         // Update state
         setUser(user);
         setIsAuthenticated(true);
-        
+
         // Invalidate and refetch user query
         queryClient.invalidateQueries({ queryKey: ['currentUser'] });
       }
@@ -97,6 +97,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  const isAdmin = () => {
+    return user?.role === 'admin';
+  };
+
+  const isUser = () => {
+    return user?.role === 'user';
+  };
+
   const contextValue: AuthContextType = {
     user,
     isAuthenticated,
@@ -104,6 +112,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     login,
     logout,
     refreshToken,
+    isAdmin,
+    isUser,
   };
 
   return (

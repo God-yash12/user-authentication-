@@ -2,13 +2,12 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, User } from 'lucide-react';
 import { loginSchema, type LoginFormData } from '../schemas/login.schemas'
 import { useAuthMutations } from '../hooks/useAuthMutations';
 import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
 import ReCAPTCHA from 'react-google-recaptcha';
-
 
 export const LoginForm: React.FC = () => {
     const navigate = useNavigate();
@@ -23,7 +22,6 @@ export const LoginForm: React.FC = () => {
         setCaptchaToken(token);
     };
 
-
     const {
         register,
         handleSubmit,
@@ -37,6 +35,7 @@ export const LoginForm: React.FC = () => {
         setShowPassword(!showPassword);
     };
 
+    // In your LoginForm.tsx
     const onSubmit = async (data: LoginFormData) => {
         try {
             if (!captchaToken) {
@@ -46,10 +45,13 @@ export const LoginForm: React.FC = () => {
                 });
                 return;
             }
+
             await login.mutateAsync({ ...data, recaptchaToken: captchaToken });
 
-            // Redirect to intended page or dashboard
-            const from = location.state?.from?.pathname || '/dashboard';
+            // Get the intended destination or default based on role
+            const from = location.state?.from?.pathname ||
+                (User?.role === 'admin' ? '/admin/dashboard' : '/dashboard');
+
             navigate(from, { replace: true });
         } catch (error: any) {
             setError('root', {

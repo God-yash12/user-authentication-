@@ -5,6 +5,7 @@ export interface User {
     isEmailVerified: boolean;
     firstName?: string;
     lastName?: string;
+    role?: 'admin' | 'user';
     createdAt?: string;
 }
 
@@ -53,6 +54,8 @@ export interface UserInfoResponse {
 
 export interface AuthContextType {
     user: User | null;
+    isAdmin: () => boolean;
+    isUser: () => boolean;
     isAuthenticated: boolean;
     isLoading: boolean;
     login: (credentials: LoginRequest) => Promise<void>;
