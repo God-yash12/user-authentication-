@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { LoadingSpinner } from '../components/ui/LoadingSpinner';
 import { LogoutButton } from '../auth/LogoutButton';
+import { useAuth } from '../hooks/useAuth';
+import { FaUsers, FaFirstOrderAlt  } from "react-icons/fa6";
+import { GiTakeMyMoney } from "react-icons/gi";
 
 interface DashboardStats {
     totalUsers: number;
@@ -23,7 +26,9 @@ const AdminDashboard: React.FC = () => {
         revenue: 0,
         activeUsers: 0
     });
-    
+
+    const { user } = useAuth();
+
     const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -31,7 +36,7 @@ const AdminDashboard: React.FC = () => {
         // Simulate API calls
         const fetchDashboardData = async () => {
             setIsLoading(true);
-            
+
             // Mock data - replace with actual API calls
             setTimeout(() => {
                 setStats({
@@ -40,14 +45,14 @@ const AdminDashboard: React.FC = () => {
                     revenue: 32450,
                     activeUsers: 156
                 });
-                
+
                 setRecentActivity([
                     { id: '1', action: 'New user registered', user: 'john.doe@email.com', timestamp: '2 minutes ago' },
                     { id: '2', action: 'Order completed', user: 'jane.smith@email.com', timestamp: '5 minutes ago' },
                     { id: '3', action: 'Payment processed', user: 'mike.wilson@email.com', timestamp: '10 minutes ago' },
                     { id: '4', action: 'User updated profile', user: 'sarah.brown@email.com', timestamp: '15 minutes ago' },
                 ]);
-                
+
                 setIsLoading(false);
             }, 1000);
         };
@@ -55,7 +60,7 @@ const AdminDashboard: React.FC = () => {
         fetchDashboardData();
     }, []);
 
-    const StatCard: React.FC<{ title: string; value: number | string; icon: string; color: string }> = 
+    const StatCard: React.FC<{ title: string; value: number | string; icon: React.ReactNode; color: string }> =
         ({ title, value, icon, color }) => {
             const colorClasses = {
                 blue: 'bg-blue-50 border-blue-200 text-blue-800',
@@ -92,13 +97,14 @@ const AdminDashboard: React.FC = () => {
             <header className="mb-8">
                 <div className="flex items-center justify-between">
                     <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+                    <h2 className="text-lg font-medium text-gray-900 mb-4">
+                        Welcome, {user?.username || user?.email}!
+                    </h2>
                     <div className="flex space-x-3">
                         <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                             Export Data
                         </button>
-                        <button className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
-                            Settings
-                        </button>
+
                         <button className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
                             <LogoutButton className="text-sm" />
                         </button>
@@ -114,19 +120,19 @@ const AdminDashboard: React.FC = () => {
                         <StatCard
                             title="Total Users"
                             value={stats.totalUsers.toLocaleString()}
-                            icon="👥"
+                            icon= {<FaUsers/>}
                             color="blue"
                         />
                         <StatCard
                             title="Total Orders"
                             value={stats.totalOrders.toLocaleString()}
-                            icon="📦"
+                            icon={<FaFirstOrderAlt />}
                             color="green"
                         />
                         <StatCard
                             title="Revenue"
                             value={`$${stats.revenue.toLocaleString()}`}
-                            icon="💰"
+                            icon={<GiTakeMyMoney />}
                             color="purple"
                         />
                         <StatCard
@@ -174,28 +180,6 @@ const AdminDashboard: React.FC = () => {
                     </div>
                 </section>
 
-                {/* Quick Actions */}
-                <section>
-                    <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <button className="bg-white p-6 rounded-lg shadow-sm border hover:shadow-md transition-shadow text-left">
-                            <span className="text-2xl block mb-2">👤</span>
-                            <span className="font-medium text-gray-900">Manage Users</span>
-                        </button>
-                        <button className="bg-white p-6 rounded-lg shadow-sm border hover:shadow-md transition-shadow text-left">
-                            <span className="text-2xl block mb-2">📊</span>
-                            <span className="font-medium text-gray-900">View Reports</span>
-                        </button>
-                        <button className="bg-white p-6 rounded-lg shadow-sm border hover:shadow-md transition-shadow text-left">
-                            <span className="text-2xl block mb-2">⚙️</span>
-                            <span className="font-medium text-gray-900">System Settings</span>
-                        </button>
-                        <button className="bg-white p-6 rounded-lg shadow-sm border hover:shadow-md transition-shadow text-left">
-                            <span className="text-2xl block mb-2">📧</span>
-                            <span className="font-medium text-gray-900">Send Notifications</span>
-                        </button>
-                    </div>
-                </section>
             </div>
         </div>
     );
