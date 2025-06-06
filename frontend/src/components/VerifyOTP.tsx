@@ -76,13 +76,17 @@ const VerifyOTP: React.FC = () => {
     const handleInputChange = (index: number, value: string) => {
         if (!/^[0-9]*$/.test(value)) return;
 
-        const currentOtp = otpValue.padEnd(OTP_LENGTH, " ");
-        const newOtp = currentOtp.split("");
-        newOtp[index] = value.slice(-1);
+        // Create array of current OTP digits, filling missing positions with empty strings
+        const otpArray = Array.from({ length: OTP_LENGTH }, (_, i) => otpValue[i] || "");
+        
+        // Update the specific index with new value (take only last character if multiple)
+        otpArray[index] = value.slice(-1);
 
-        const updatedOtp = newOtp.join("").replace(/ /g, "");
+        // Join array and remove any trailing empty strings, but keep leading/middle empty positions
+        const updatedOtp = otpArray.join("").replace(/\s+$/, "");
         setValue("otp", updatedOtp);
 
+        // Move to next input if current input has value and not at last position
         if (value && index < OTP_LENGTH - 1) {
             inputsRef.current[index + 1]?.focus();
         }
@@ -90,19 +94,22 @@ const VerifyOTP: React.FC = () => {
 
     const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === "Backspace") {
-            const currentOtp = otpValue.padEnd(OTP_LENGTH, " ");
-            const newOtp = currentOtp.split("");
+            // Create array of current OTP digits
+            const otpArray = Array.from({ length: OTP_LENGTH }, (_, i) => otpValue[i] || "");
 
-            if (newOtp[index] === " " || newOtp[index] === "") {
+            if (!otpArray[index] || otpArray[index] === "") {
+                // If current position is empty, go to previous and clear it
                 if (index > 0) {
                     inputsRef.current[index - 1]?.focus();
-                    newOtp[index - 1] = "";
+                    otpArray[index - 1] = "";
                 }
             } else {
-                newOtp[index] = "";
+                // Clear current position
+                otpArray[index] = "";
             }
 
-            const updatedOtp = newOtp.join("").replace(/ /g, "");
+            // Update OTP value
+            const updatedOtp = otpArray.join("").replace(/\s+$/, "");
             setValue("otp", updatedOtp);
         }
     };
@@ -125,64 +132,111 @@ const VerifyOTP: React.FC = () => {
     };
 
     if (!email || !username || !password) {
-        return <div>Redirecting...</div>;
+        return (
+            <div className="flex items-center justify-center min-h-screen">
+                <div className="text-lg text-gray-600">Redirecting...</div>
+            </div>
+        );
     }
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-            <h2>Enter OTP</h2>
-            <p style={{ marginBottom: "1rem", color: "#666" }}>Please enter the 6-digit code sent to {email}</p>
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-md w-full space-y-8">
+                <div className="text-center">
+                    <h2 className="text-3xl font-bold text-gray-900 mb-2">Verify Your Account</h2>
+                    <p className="text-sm text-gray-600 mb-8">
+                        Please enter the 6-digit verification code sent to{" "}
+                        <span className="font-medium text-gray-900">{email}</span>
+                    </p>
+                </div>
 
-            <Controller
-                name="otp"
-                control={control}
-                render={() => (
-                    <div style={{ display: "flex", gap: "8px" }}>
-                        {Array.from({ length: OTP_LENGTH }).map((_, idx) => (
-                            <input
-                                key={idx}
-                                type="text"
-                                inputMode="numeric"
-                                maxLength={1}
-                                value={getDigitValue(idx)}
-                                onChange={(e) => handleInputChange(idx, e.target.value)}
-                                onKeyDown={(e) => handleKeyDown(idx, e)}
-                                onPaste={handlePaste}
-                                ref={(el) => { inputsRef.current[idx] = el; }}
-                                style={{
-                                    width: "2rem",
-                                    fontSize: "2rem",
-                                    textAlign: "center",
-                                    border: errors.otp ? "2px solid red" : "1px solid #ccc",
-                                }}
-                                autoFocus={idx === 0}
-                            />
-                        ))}
-                    </div>
-                )}
-            />
+                <div className="bg-white py-8 px-6 shadow-lg rounded-lg border border-gray-200">
+                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                        <Controller
+                            name="otp"
+                            control={control}
+                            render={() => (
+                                <div className="flex justify-center space-x-3">
+                                    {Array.from({ length: OTP_LENGTH }).map((_, idx) => (
+                                        <input
+                                            key={idx}
+                                            type="text"
+                                            inputMode="numeric"
+                                            maxLength={1}
+                                            value={getDigitValue(idx)}
+                                            onChange={(e) => handleInputChange(idx, e.target.value)}
+                                            onKeyDown={(e) => handleKeyDown(idx, e)}
+                                            onPaste={handlePaste}
+                                            ref={(el) => { inputsRef.current[idx] = el; }}
+                                            className={`w-12 h-12 text-center text-xl font-semibold border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
+                                                errors.otp
+                                                    ? "border-red-500 bg-red-50"
+                                                    : getDigitValue(idx)
+                                                    ? "border-blue-500 bg-blue-50"
+                                                    : "border-gray-300 bg-white hover:border-gray-400"
+                                            }`}
+                                            autoFocus={idx === 0}
+                                        />
+                                    ))}
+                                </div>
+                            )}
+                        />
 
-            {errors.otp && <div style={{ color: "red", marginTop: 8 }}>{errors.otp.message}</div>}
-            {verifyOTPMutation.error && <div style={{ color: "red", marginTop: 8 }}>{(verifyOTPMutation.error as any)?.response?.data?.message || "Invalid OTP. Please try again."}</div>}
-            {resendStatus && <div style={{ color: resendStatus.includes("success") ? "green" : "red", marginTop: 8 }}>{resendStatus}</div>}
+                        {errors.otp && (
+                            <div className="text-red-600 text-sm text-center bg-red-50 p-2 rounded-md border border-red-200">
+                                {errors.otp.message}
+                            </div>
+                        )}
 
-            <button
-                type="submit"
-                disabled={verifyOTPMutation.isPending || otpValue.length !== OTP_LENGTH}
-                style={{ marginTop: 16, backgroundColor: "#007bff", color: "white", padding: "0.5rem 1rem", border: "none", borderRadius: "4px" }}
-            >
-                {verifyOTPMutation.isPending ? "Verifying..." : "Verify OTP"}
-            </button>
+                        {verifyOTPMutation.error && (
+                            <div className="text-red-600 text-sm text-center bg-red-50 p-2 rounded-md border border-red-200">
+                                {(verifyOTPMutation.error as any)?.response?.data?.message || "Invalid OTP. Please try again."}
+                            </div>
+                        )}
 
-            <button
-                type="button"
-                onClick={() => resendOtpMutation.mutate()}
-                disabled={resendOtpMutation.isPending}
-                style={{ marginTop: 12, backgroundColor: "#007bff", color: "white", padding: "0.5rem 1rem", border: "none", borderRadius: "4px" }}
-            >
-                {resendOtpMutation.isPending ? "Resending..." : "Resend OTP"}
-            </button>
-        </form>
+                        {resendStatus && (
+                            <div className={`text-sm text-center p-2 rounded-md border ${
+                                resendStatus.includes("success")
+                                    ? "text-green-600 bg-green-50 border-green-200"
+                                    : "text-red-600 bg-red-50 border-red-200"
+                            }`}>
+                                {resendStatus}
+                            </div>
+                        )}
+
+                        <button
+                            type="submit"
+                            disabled={verifyOTPMutation.isPending || otpValue.length !== OTP_LENGTH}
+                            className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        >
+                            {verifyOTPMutation.isPending ? (
+                                <div className="flex items-center">
+                                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    Verifying...
+                                </div>
+                            ) : (
+                                "Verify OTP"
+                            )}
+                        </button>
+
+                        <div className="text-center">
+                            <p className="text-sm text-gray-600 mb-2">Didn't receive the code?</p>
+                            <button
+                                type="button"
+                                onClick={() => resendOtpMutation.mutate()}
+                                disabled={resendOtpMutation.isPending}
+                                className="text-blue-600 hover:text-blue-500 font-medium text-sm underline focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            >
+                                {resendOtpMutation.isPending ? "Resending..." : "Resend OTP"}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     );
 };
 
