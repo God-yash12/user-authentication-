@@ -3,7 +3,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
-import { CaptchaModule } from './captcha/captcha.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { databaseConfig } from './config/database.config';
 import configuration from './config/configuration';
@@ -29,7 +28,6 @@ import { UserInfoModule } from './user-info/user-info.module';
     }),
 
     AuthModule,
-    CaptchaModule,
     MailerModule,
     LoginModule,
     ResetPasswordModule,

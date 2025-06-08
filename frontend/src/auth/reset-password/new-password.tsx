@@ -62,26 +62,26 @@ export const NewPasswordForm = () => {
             {/* New Password Field */}
             <div className="relative">
               <Input
-                label="New Password"
-                type={showNewPassword ? "text" : "password"} 
-                {...register("newPassword", {
-                  required: "Password is required",
-                  minLength: {
-                    value: 8,
-                    message: "Password must be at least 8 characters",
-                  },
-                  pattern: {
-                    value: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/,
-                    message: "Password must contain at least one letter and one number",
-                  },
-                })}
+              label="New Password"
+              type={showNewPassword ? "text" : "password"} 
+              {...register("newPassword", {
+                required: "Password is required",
+                minLength: {
+                value: 12,
+                message: "Password must be at least 12 characters",
+                },
+                pattern: {
+                value: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{12,}$/,
+                message: "Password must contain at least one letter and one number",
+                },
+              })}
               />
               <button
-                type="button"
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
-                onClick={() => setShowNewPassword(!showNewPassword)}
+              type="button"
+               className="absolute inset-y-11 right-0 pr-3 flex items-center text-sm leading-5"
+              onClick={() => setShowNewPassword(!showNewPassword)}
               >
-                {showNewPassword ? <FaEyeSlash /> : <FaEye />}
+              {showNewPassword ? <FaEyeSlash /> : <FaEye />}
               </button>
             </div>
             {errors.newPassword && (
@@ -91,20 +91,20 @@ export const NewPasswordForm = () => {
             {/* Confirm Password Field */}
             <div className="relative">
               <Input
-                label="Confirm Password"
-                type={showConfirmPassword ? "text" : "password"}
-                {...register("confirmPassword", {
-                  required: "Please confirm your password",
-                  validate: (value) =>
-                    value === watch("newPassword") || "Passwords do not match",
-                })}
+              label="Confirm Password"
+              type={showConfirmPassword ? "text" : "password"}
+              {...register("confirmPassword", {
+                required: "Please confirm your password",
+                validate: (value) =>
+                value === watch("newPassword") || "Passwords do not match",
+              })}
               />
               <button
-                type="button"
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)} 
+              type="button"
+              className="absolute inset-y-11 right-0 pr-3 flex items-center text-sm leading-5"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)} 
               >
-                {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+              {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
               </button>
             </div>
             {errors.confirmPassword && (

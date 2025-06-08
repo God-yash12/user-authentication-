@@ -122,7 +122,7 @@ export class AuthService {
     user.isEmailVerified = true;
     user.firstName = verifyOtpDto.firstName;
     user.lastName = verifyOtpDto.lastName;
-    user.role = 'user'; // Default role, can be changed later
+    user.role = 'user';
 
     const savedUser = await this.usersRepository.save(user);
     console.log('User created successfully:', savedUser.email);

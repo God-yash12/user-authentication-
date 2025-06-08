@@ -57,7 +57,6 @@ export class LoginController {
         message: 'Login successful',
         data: {
           user: result.user,
-          // Optionally still return tokens in response for backward compatibility
           // Remove these lines if you want cookies-only approach
           accessToken: result.tokens.accessToken,
           refreshToken: result.tokens.refreshToken,
