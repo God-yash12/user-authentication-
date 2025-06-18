@@ -1,58 +1,41 @@
-
-import { Controller, Post, Body, Res, HttpStatus } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { RegisterUserDto, VerifyOtpDto, ResendOtpDto } from './dto/create-auth.dto';
-import { Response } from 'express';
+import { Controller, Get, Post, UseGuards, Body } from '@nestjs/common';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { RolesGuard } from '../common/guards/roles.guard';
+import { Roles } from '../common/decorators/roles.decorator';
+import { CurrentUser } from '../common/decorators/current-user.decorator';
+import { UserRole } from '../users/entities/user.entity';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) { }
-
-  @Post('register/initiate')
-  async initiateRegistration(@Body() registerUserDto: RegisterUserDto, @Res() res: Response) {
-    try {
-      const result = await this.authService.initiateRegistration(registerUserDto);
-      return res.status(HttpStatus.OK).json(result);
-    } catch (error) {
-      return res.status(HttpStatus.BAD_REQUEST).json({
-        message: error.message || 'Registration initiation failed',
-      });
-    }
+  
+  @Get('profile')
+  @UseGuards(JwtAuthGuard)
+  async getProfile(@CurrentUser() user: any) {
+    return {
+      success: true,
+      data: user,
+    };
   }
 
-  @Post('register/complete')
-  async completeRegistration(
-    @Body() verifyOtpDto: VerifyOtpDto & RegisterUserDto,
-    @Res() res: Response
-  ) {
-    try {
-      const user = await this.authService.completeRegistration(verifyOtpDto);
-      return res.status(HttpStatus.CREATED).json({
-        message: 'User registered successfully',
-        user: {
-          id: user.id,
-          username: user.username,
-          email: user.email,
-          isEmailVerified: user.isEmailVerified,
-          createdAt: user.createdAt,
-        },
-      });
-    } catch (error) {
-      return res.status(HttpStatus.BAD_REQUEST).json({
-        message: error.message || 'Registration completion failed',
-      });
-    }
+  @Get('admin-only')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  async adminOnlyRoute(@CurrentUser() user: any) {
+    return {
+      success: true,
+      message: 'This is an admin-only route',
+      data: user,
+    };
   }
 
-  @Post('register/resend-otp')
-  async resendOtp(@Body() resendOtpDto: ResendOtpDto, @Res() res: Response) {
-    try {
-      const result = await this.authService.resendOtp(resendOtpDto.email);
-      return res.status(HttpStatus.OK).json(result);
-    } catch (error) {
-      return res.status(HttpStatus.BAD_REQUEST).json({
-        message: error.message || 'Failed to resend OTP',
-      });
-    }
+  @Post('logout')
+  @UseGuards(JwtAuthGuard)
+  async logout(@CurrentUser('id') userId: string) {
+    // Here you could add the token to a blacklist or clear refresh token
+    // For simplicity, we're just returning success
+    return {
+      success: true,
+      message: 'Logged out successfully',
+    };
   }
 }
