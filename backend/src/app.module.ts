@@ -15,6 +15,8 @@ import { CommonModule } from './common/common.module';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { JwtModule } from '@nestjs/jwt';
 import { APP_GUARD } from '@nestjs/core';
+import { AuthModule } from './auth/auth.module';
+import { ResetPasswordModule } from './reset-password/reset-password.module';
 
 @Module({
   imports: [
@@ -49,8 +51,8 @@ import { APP_GUARD } from '@nestjs/core';
     OtpModule,
     UsersModule,
     CommonModule,
-
-    
+    AuthModule,
+    ResetPasswordModule
   ],
   controllers: [AppController],
   providers: [

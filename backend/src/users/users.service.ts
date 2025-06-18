@@ -9,7 +9,7 @@ import { ObjectId } from 'mongodb';
 export class UsersService {
   constructor(
     @InjectRepository(User)
-    private readonly userRepository: MongoRepository<User>, // MongoRepository instead of Repository
+    private readonly userRepository: MongoRepository<User>, 
   ) {}
 
   async create(userData: Partial<User>): Promise<User> {
