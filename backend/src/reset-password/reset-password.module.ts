@@ -6,8 +6,8 @@ import { User } from '../users/entities/user.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UsersModule } from '../users/users.module';  
-import { EmailModule } from 'src/email/email.module';
-import { OtpModule } from 'src/otp/otp.module';
+import { EmailModule } from '../email/email.module';
+import { OtpModule } from '../otp/otp.module';
 
 @Module({
   imports: [
@@ -25,7 +25,7 @@ import { OtpModule } from 'src/otp/otp.module';
     OtpModule,
   ],
   controllers: [ResetPasswordController],
-  providers: [ResetPasswordService],  // no need to provide EmailService or OtpService here
+  providers: [ResetPasswordService],  
   exports: [ResetPasswordService],
 })
 export class ResetPasswordModule {}

@@ -17,6 +17,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthModule } from './auth/auth.module';
 import { ResetPasswordModule } from './reset-password/reset-password.module';
+import { UserDataModule } from './get-users-data/userdata.module';
 
 @Module({
   imports: [
@@ -52,7 +53,8 @@ import { ResetPasswordModule } from './reset-password/reset-password.module';
     UsersModule,
     CommonModule,
     AuthModule,
-    ResetPasswordModule
+    ResetPasswordModule,
+    UserDataModule
   ],
   controllers: [AppController],
   providers: [

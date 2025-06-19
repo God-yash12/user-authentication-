@@ -16,7 +16,7 @@ export class ResetPasswordController {
   async verifyOTP(@Body() body: { email: string; otp: string }) {
     return this.resetPasswordService.verifyOtp(body.email, body.otp);
   }
-
+  
   // Reset password by email and newPassword
   @Post('reset-password')
   async resetPassword(@Body() body: { email: string; newPassword: string }) {

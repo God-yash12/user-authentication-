@@ -1,45 +1,46 @@
-import { Toaster } from 'react-hot-toast'
-import { Route, Routes } from 'react-router-dom'
-import { Dashboard } from './components/Dashboard'
-import { RegisterForm } from './components/RegisterForm'
-import VerifyOTP from './components/VerifyOTP'
-import { ProtectedRoute } from './auth/ProtectedRoute'
-import { LoginForm } from './auth/LoginForm'
-import { ResetPassword } from './auth/reset-password/reset-password'
-import { VerifyOTPForgetPassword } from './auth/reset-password/verify-otp'
-import { NewPasswordForm } from './auth/reset-password/new-password'
-import AdminDashboard from './admin/Dashboard'
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
+import { AuthProvider } from './context/AuthContext';
+import { ProtectedRoute } from './components/routes/ProtectedRoute';
+import { AuthLayout } from './layouts/AuthLayout';
+import { LoginForm } from './components/auth/LoginForm';
+import { VerifyOtpForm } from './components/auth/VerifyOtpForm';
+import { Dashboard } from './components/Dashboard';
+import AdminDashboard from './admin/Dashboard';
+import { RequestOtpForm } from './components/reset-password/reset-password';
+import { VerifyResetOtpForm } from './components/reset-password/verify-otp';
+import { ResetPasswordForm } from './components/reset-password/new-password';
+import TravelAgencyLanding from './components/landingPage';
 
-function App() {
+export const App: React.FC = () => {
   return (
     <>
-      <Toaster />
-      <Routes>
-        <Route path="/" element={<RegisterForm />} />
-        <Route path="/VerifyOTP" element={<VerifyOTP />} />
-        <Route path="/login" element={<LoginForm />} />
-        
-        {/* User dashboard */}
-        <Route path="/dashboard" element={
-          <ProtectedRoute requiredRole="user">
-            <Dashboard />
-          </ProtectedRoute>
-        } />
-        
-        {/* Admin dashboard */}
-        <Route path="/admin/dashboard" element={
-          <ProtectedRoute requiredRole="admin">
-            <AdminDashboard /> {/* You'll need to create this component */}
-          </ProtectedRoute>
-        } />
-        
-        {/* Other routes */}
-        <Route path="/forgot-password" element={<ResetPassword />} />
-        <Route path="/create-newPassword" element={<NewPasswordForm />} />
-        <Route path="/verify-otp" element={<VerifyOTPForgetPassword />} />
-        <Route path="*" element={<div>404 Not Found</div>} />
-      </Routes>
+      <AuthProvider>
+        <Routes>
+          <Route path="/" element={<TravelAgencyLanding />} />
+          <Route path="/login" element={<LoginForm />} />
+          <Route path="/verify-otp" element={<VerifyOtpForm />} />
+          <Route path="/forgot-password" element={<RequestOtpForm />} />
+          <Route path="/verify-reset-otp" element={<VerifyResetOtpForm />} />
+          <Route path="/reset-password" element={<ResetPasswordForm />} />
+
+          {/* User Dashboard */}
+          <Route element={<ProtectedRoute roles={['user']} />}>
+            <Route element={<AuthLayout />}>
+              <Route path="/user/dashboard" element={<Dashboard />} />
+            </Route>
+          </Route>
+
+          {/* Admin Dashboard */}
+          <Route element={<ProtectedRoute roles={['admin']} />}>
+            <Route element={<AuthLayout />}>
+              <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            </Route>
+          </Route>
+        </Routes>
+      </AuthProvider>
+      <Toaster position="top-center" />
     </>
   );
-}
-export default App
+};

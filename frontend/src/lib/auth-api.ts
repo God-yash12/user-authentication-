@@ -1,39 +1,51 @@
-import { apiClient } from './api';
-import type {
-    LoginRequest,
-    LoginResponse,
-    RefreshTokenResponse,
-    ValidateTokenResponse,
-    UserInfoResponse,
-} from '../types/auth.types';
+import api from '../api/api';
+import type { AuthResponse, SignupResponse, SignupFormData, LoginFormData, VerifyOtpFormData, User, GenerateOtpResponse, VerifyOtpResponse, ResetPasswordResponse } from '../types/auth.types';
 
-export const authApi = {
-  login: async (credentials: LoginRequest): Promise<LoginResponse> => {
-    const response = await apiClient.post<LoginResponse>('/login', credentials);
+export const authService = {
+  async signup(data: SignupFormData): Promise<SignupResponse> {
+    const response = await api.post<SignupResponse>('/signup', data);
     return response.data;
   },
 
-  refreshToken: async (refreshToken: string): Promise<RefreshTokenResponse> => {
-    const response = await apiClient.post<RefreshTokenResponse>('/refresh', {
-      refreshToken,
-    });
+  async verifyOtp(data: VerifyOtpFormData): Promise<{ success: boolean; message: string }> {
+    const response = await api.post('/signup/verify-otp', data);
     return response.data;
   },
 
-  logout: async (userId: string): Promise<{ success: boolean; message: string }> => {
-    const response = await apiClient.post('/logout', { userId });
+  async login(data: LoginFormData): Promise<AuthResponse> {
+    const response = await api.post<AuthResponse>('/login', data);
     return response.data;
   },
 
-  validateToken: async (token: string): Promise<ValidateTokenResponse> => {
-    const response = await apiClient.post<ValidateTokenResponse>('/validate', {
-      token,
-    });
+  async getProfile(): Promise<{ success: boolean; data: User }> {
+    const response = await api.get('/auth/profile');
     return response.data;
   },
 
-  getCurrentUser: async (id: string): Promise<UserInfoResponse> => {
-    const response = await apiClient.get<UserInfoResponse>(`/user-info/${id}`);
+  async logout(): Promise<{ success: boolean; message: string }> {
+    const response = await api.post('/auth/logout');
     return response.data;
   },
+
+  async generateOTP(email: string): Promise<GenerateOtpResponse> {
+    const response = await api.post<GenerateOtpResponse>('/auth/generate-otp', { email });
+    return response.data;
+  },
+
+  async verifyOTP(email: string, otp: string): Promise<VerifyOtpResponse> {
+    const response = await api.post<VerifyOtpResponse>('/auth/verify-otp', { email, otp });
+    return response.data;
+  },
+
+  async resetPassword(email: string, newPassword: string): Promise<ResetPasswordResponse> {
+    const response = await api.post<ResetPasswordResponse>('/auth/reset-password', { email, newPassword });
+    return response.data;
+  },
+
+  async getUsersData(): Promise<User[]> {
+    const response = await api.get<User[]>('/get-users-data');
+    return response.data;
+  }
 };
+
+export { api };
